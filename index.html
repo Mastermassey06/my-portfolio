@@ -652,6 +652,7 @@
         flex-direction: column-reverse;
         text-align: center;
         gap: 2rem;
+        align-items: center;
       }
       
       .hero-text {
@@ -685,6 +686,15 @@
         width: 280px;
         height: 350px;
         margin: 0 auto;
+        display: block;
+      }
+      
+      .head-container.active .head-left {
+        transform: translateX(-25px) rotateY(-20deg);
+      }
+      
+      .head-container.active .head-right {
+        transform: translateX(25px) rotateY(20deg);
       }
       
       .brain-image {
@@ -716,9 +726,13 @@
       .scroll-indicator {
         position: relative;
         bottom: auto;
-        margin-top: 2rem;
+        left: auto;
+        margin: 2rem auto 0;
         transform: none;
         animation: bounce-mobile 2s infinite;
+        display: flex;
+        justify-content: center;
+        width: 100%;
       }
       
       @keyframes bounce-mobile {
@@ -865,6 +879,14 @@
         height: 300px;
       }
       
+      .head-container.active .head-left {
+        transform: translateX(-20px) rotateY(-15deg);
+      }
+      
+      .head-container.active .head-right {
+        transform: translateX(20px) rotateY(15deg);
+      }
+      
       .brain-image {
         width: 160px;
       }
@@ -889,6 +911,36 @@
     
     /* Touch device detection - disable hover effects */
     @media (hover: none) {
+      .head-container:hover .head-left,
+      .head-container:hover .head-right,
+      .head-container:hover .brain-container,
+      .head-container:hover .float-label {
+        transform: none;
+        opacity: 1;
+      }
+      
+      .head-container:hover .brain-container {
+        opacity: 0;
+      }
+      
+      .head-container.active .head-left {
+        transform: translateX(-40px) rotateY(-25deg);
+        opacity: 0.7;
+      }
+      
+      .head-container.active .head-right {
+        transform: translateX(40px) rotateY(25deg);
+        opacity: 0.7;
+      }
+      
+      .head-container.active .brain-container {
+        opacity: 1;
+      }
+      
+      .head-container.active .float-label {
+        opacity: 0;
+      }
+      
       .timeline-item .timeline-content {
         opacity: 0;
         transform: scale(0.95);
@@ -1099,15 +1151,27 @@
       document.getElementById('journey-hint').textContent = 'tap each point to reveal';
     }
     
-    // Head container toggle
-    document.getElementById('headContainer').addEventListener('click', function() {
+    // Head container toggle - works on both mobile and desktop
+    const headContainer = document.getElementById('headContainer');
+    headContainer.addEventListener('click', function(e) {
+      e.stopPropagation();
       this.classList.toggle('active');
     });
+    
+    // Close head when clicking outside (mobile)
+    if (isTouchDevice) {
+      document.addEventListener('click', function(e) {
+        if (!e.target.closest('#headContainer')) {
+          headContainer.classList.remove('active');
+        }
+      });
+    }
     
     // Timeline items - click to toggle on mobile
     document.querySelectorAll('.timeline-item').forEach(item => {
       item.addEventListener('click', function(e) {
         if (isTouchDevice) {
+          e.stopPropagation();
           // Close all other items
           document.querySelectorAll('.timeline-item').forEach(other => {
             if (other !== this) {
